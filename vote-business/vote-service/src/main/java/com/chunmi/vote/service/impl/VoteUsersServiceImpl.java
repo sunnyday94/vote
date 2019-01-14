@@ -2,6 +2,8 @@ package com.chunmi.vote.service.impl;
 
 import java.util.List;
 
+import com.chunmi.vote.vo.UserQueryVo;
+import com.chunmi.vote.vo.VoteUsersResp;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,12 +32,13 @@ public class VoteUsersServiceImpl implements VoteUsersService{
 	}
 
 	@Override
-	public PageBean<VoteUsers> selectVoteUsers(Integer pageCurrent, Integer pageSize, Integer pageCount) {
-		PageBean<VoteUsers> pb = new PageBean<VoteUsers>();
+	public PageBean<VoteUsersResp> selectVoteUsers(Integer pageCurrent, Integer pageSize, Integer pageCount,
+												   UserQueryVo userQueryVo) {
+		PageBean<VoteUsersResp> pb = new PageBean<>();
 		//判断
 		if(pageSize == 0) pageSize = 10;
 		if(pageCurrent == 0) pageCurrent = 1;
-		int rows = voteUsersMapper.selectVoteUsersCount().intValue();
+		int rows = voteUsersMapper.selectVoteUsersCount(userQueryVo).intValue();
 		if(pageCount == 0) pageCount = rows%pageSize == 0 ? (rows/pageSize) : (rows/pageSize) + 1;
 		//如果当前页>=最大页,则设置当前页为最大页
 		if(pageCurrent>=pageCount) {
@@ -46,7 +49,9 @@ public class VoteUsersServiceImpl implements VoteUsersService{
 		pb.setPageCurrent(pageCurrent);
 		pb.setPageSize(pageSize);
 		pb.setPageCount(pageCount);
-		List<VoteUsers> voteUserList = voteUsersMapper.selectVoteUserList(pageRequest);
+		pb.setObjectBean(userQueryVo);
+		pb.setRows(rows);
+		List<VoteUsersResp> voteUserList = voteUsersMapper.selectVoteUserList(pageRequest,userQueryVo);
 		pb.setList(voteUserList);
 		return pb;
 		

@@ -182,12 +182,55 @@
   </update>
   
   <!-- 分页查询用户列表 -->
-  <select id="selectVoteUserList" resultMap="voteUsersResultMap">
-  select <include refid="Base_Column_List"/> from cm_vote_users order by create_time limit #{pageRequest.page},#{pageRequest.pageSize}
-  </select>
-  
+  <!--<select id="selectVoteUserList" resultMap="voteUsersResultMap">-->
+  <!--select <include refid="Base_Column_List"/> from cm_vote_users order by create_time limit #{pageRequest.page},#{pageRequest.pageSize}-->
+  <!--</select>-->
+
   <!-- 根据用户名查询用户信息 -->
   <select id="selectVoteByName" resultMap="voteUsersResultMap">
   	select <include refid="Base_Column_List"/> from cm_vote_users where user_name = #{userName,jdbcType=VARCHAR}
+  </select>
+
+  <!--分页查询用户列表(新)-->
+  <select id="selectVoteUserList" resultType="com.chunmi.vote.vo.VoteUsersResp">
+    SELECT
+      u.user_name userName,
+      g.group_name groupName,
+      r.role_name roleName,
+      u.del_flag delFlag
+    FROM
+        cm_vote_users u
+    LEFT JOIN cm_vote_role r ON u.role_id = r.id
+    LEFT JOIN cm_vote_group g ON u.group_id = g.id
+    <where>
+      <if test="user.userName!=null and user.userName!=''">
+          u.user_name LIKE CONCAT('%',#{user.userName},'%')
+      </if>
+      <if test="user.groupId!=null">
+        AND g.id = #{user.groupId}
+      </if>
+      <if test="user.roleId!=null">
+        AND r.id = #{user.roleId}
+      </if>
+    </where>
+    ORDER BY u.create_time limit #{pageRequest.page},#{pageRequest.pageSize}
+  </select>
+
+  <!--根据条件查询用户条目数-->
+  <select id="selectVoteUsersCount" resultType="java.lang.Long">
+    SELECT COUNT(1) FROM cm_vote_users u
+    LEFT JOIN cm_vote_role r ON u.role_id = r.id
+    LEFT JOIN cm_vote_group g ON u.group_id = g.id
+    <where>
+      <if test="user.userName!=null and user.userName!=''">
+        u.user_name LIKE CONCAT('%',#{user.userName},'%')
+      </if>
+      <if test="user.groupId!=null">
+        AND g.id = #{user.groupId}
+      </if>
+      <if test="user.roleId!=null">
+        AND r.id = #{user.roleId}
+      </if>
+    </where>
   </select>
 </mapper>

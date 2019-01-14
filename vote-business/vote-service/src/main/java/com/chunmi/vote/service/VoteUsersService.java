@@ -2,13 +2,15 @@ package com.chunmi.vote.service;
 
 import com.chunmi.vote.po.VoteUsers;
 import com.chunmi.vote.utils.PageBean;
+import com.chunmi.vote.vo.UserQueryVo;
+import com.chunmi.vote.vo.VoteUsersResp;
 
 public interface VoteUsersService {
 	VoteUsers selectVoteUsersByName(String userName);
 
 	Integer addVoteUser(VoteUsers voteUser);
 	
-	PageBean<VoteUsers> selectVoteUsers(Integer pageCurrent, Integer pageSize, Integer pageCount);
+	PageBean<VoteUsersResp> selectVoteUsers(Integer pageCurrent, Integer pageSize, Integer pageCount, UserQueryVo userQueryVo);
 
 	Integer updateUserStatus(VoteUsers voteUser);
 

@@ -2,16 +2,15 @@ package com.chunmi.vote.controller;
 
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
+
+import com.chunmi.vote.vo.UserQueryVo;
+import com.chunmi.vote.vo.VoteUsersResp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import com.chunmi.vote.controller.filter.MySessionListener;
 import com.chunmi.vote.po.VoteGroup;
@@ -51,20 +50,29 @@ public class VoteUsersController {
 	 * @return
 	 */
 	@GetMapping(value="userList_{pageCurrent}_{pageSize}_{pageCount}")
-	public String voteUserList(@PathVariable Integer pageCurrent,@PathVariable Integer pageSize,@PathVariable Integer pageCount, Model model,
-			HttpServletRequest request) {
-		//输出
-		PageBean<VoteUsers> pb = voteUsersService.selectVoteUsers(pageCurrent,pageSize,pageCount);
-		String pageHTML = PageUtil.getPageContent("userList_{pageCurrent}_{pageSize}_{pageCount}", pb.getPageCurrent(), pb.getPageSize(), pb.getPageCount());
-		List<VoteRole> voteRoleList = voteRoleService.selectVoteRoleList();
-		List<VoteGroup> voteGroupList = voteGroupService.selectVoteGroupList();
-		
-		model.addAttribute("pb",pb);
-		model.addAttribute("pageHTML",pageHTML);
-		model.addAttribute("voteRoleList", voteRoleList);
-		model.addAttribute("voteGroupList", voteGroupList);
-		model.addAttribute(Constant.LOGIN_MANAGER,request.getSession().getAttribute(Constant.LOGIN_MANAGER));
-		model.addAttribute(Constant.ACTIVE_SESSION,MySessionListener.getActiveSession());
+	public String voteUserList(@PathVariable("pageCurrent") Integer pageCurrent, @PathVariable("pageSize") Integer pageSize,
+							   @PathVariable("pageCount") Integer pageCount,Model model,
+							    UserQueryVo userQueryVo,HttpServletRequest request) {
+		try {
+			//输出
+			PageBean<VoteUsersResp> pb = voteUsersService.selectVoteUsers(pageCurrent,pageSize,pageCount,userQueryVo);
+			List<VoteRole> voteRoleList = voteRoleService.selectVoteRoleList();
+			List<VoteGroup> voteGroupList = voteGroupService.selectVoteGroupList();
+
+			//生成新的查询url
+			String newUrl = "userList_{pageCurrent}_{pageSize}_{pageCount}?userName="+userQueryVo.getUserName()+
+					"&groupId="+userQueryVo.getGroupId()+"&roleId="+userQueryVo.getRoleId();
+
+			String pageHTML = PageUtil.getPageContent(newUrl, pb.getPageCurrent(), pb.getPageSize(), pb.getPageCount());
+			model.addAttribute("pb",pb);
+			model.addAttribute("pageHTML",pageHTML);
+			model.addAttribute("voteRoleList", voteRoleList);
+			model.addAttribute("voteGroupList", voteGroupList);
+			model.addAttribute(Constant.LOGIN_MANAGER,request.getSession().getAttribute(Constant.LOGIN_MANAGER));
+			model.addAttribute(Constant.ACTIVE_SESSION,MySessionListener.getActiveSession());
+		}catch (Exception e){
+			logger.error("查询用户列表失败",e);
+		}
 		return "users/usersManage";
 	}
 	

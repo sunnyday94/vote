@@ -29,7 +29,27 @@
 		  	</div>
 		  	
         	<div class="wrapper wrapper-content animated fadeInRight">
-            	<div class="row">
+				<div class="row">
+					<div class="col-sm-12" >
+						<form id="dataTable" th:action="@{userList_0_0_0}" method="get">
+							<label class="control-label">用户名:</label>
+							<input class="input-medium"  name="userName" type="text" th:value="${pb.objectBean.userName}" id="userName"
+								   style="height: 2.6rem; width: 20rem;margin-right: 3rem;"/>
+							<label class="control-label">所属分组:</label>
+							<select id="groupId" name="groupId" class="selector" style="height: 2.6rem; width: 20rem;margin-right: 3rem;">
+								<option value="">---请选择---</option>
+								<option th:each="voteGroup : ${voteGroupList }" th:value="${voteGroup.id}" th:text="${voteGroup.groupName}"></option>
+							</select>
+							<label class="control-label">角色:</label>
+							<select id="roleId" name="roleId" class="selector" style="height: 2.6rem; width: 20rem;margin-right: 3rem;">
+								<option value="">---请选择---</option>
+								<option th:each="voteRole : ${voteRoleList }" th:value="${voteRole.id}" th:text="${voteRole.roleName}"></option>
+							</select>
+							<button type="submit" class="btn btn-primary">查询</button>
+						</form>
+					</div>
+				</div>
+            	<div class="row" style="margin-top:14px;">
                 	<div class="col-lg-12">
 	                    <div class="ibox float-e-margins">
 	                        <div class="ibox-title">
@@ -58,9 +78,11 @@
 	                                    <tbody>
 	                                    	<tr th:each="voteUser : ${pb.list}">
 										   		<td th:text="${voteUser.userName}">Onions</td>
-										      	<td th:text="${voteUser.voteGroup!=null} ? 
-										      		${voteUser.voteGroup.groupName} : '暂无'">Onions</td>
-										      	<td th:text="${voteUser.voteRole!=null} ? ${voteUser.voteRole.roleName} : '暂无'">Onions</td>
+										      	<!--<td th:text="${voteUser.voteGroup!=null} ? -->
+										      		<!--${voteUser.voteGroup.groupName} : '暂无'">Onions</td>-->
+										      	<!--<td th:text="${voteUser.voteRole!=null} ? ${voteUser.voteRole.roleName} : '暂无'">Onions</td>-->
+												<td th:text="${voteUser.groupName}"></td>
+												<td th:text="${voteUser.roleName}"></td>
 										      	<td th:text="${voteUser.delFlag eq '0'} ?'已启用' : '已禁用'">Onions</td>
 										      	<div th:if="${loginManager.voteRole!=null &amp;&amp; loginManager.voteRole.roleType eq '0'}">
 											      	<td>
@@ -130,6 +152,17 @@
 		$(document).ready(function () {
 			siderBar("voteUserList");
 			$("#pageHTML").html(pageHTML);
+
+            var groupId = [[${pb.objectBean.groupId}]];
+            var roleId = [[${pb.objectBean.roleId}]];
+
+            if(groupId !=null && groupId !==''){
+                $("#groupId").val(groupId);
+            }
+
+            if(roleId!=null && roleId !==''){
+                $("#roleId").val(roleId);
+			}
 		});
 		
 		//更新用户状态

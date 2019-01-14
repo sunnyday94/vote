@@ -4,6 +4,8 @@ package com.chunmi.vote.dao;
 
 import java.util.List;
 
+import com.chunmi.vote.vo.UserQueryVo;
+import com.chunmi.vote.vo.VoteUsersResp;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -74,15 +76,16 @@ public interface VoteUsersMapper {
      * 查询用户数量
      * @return
      */
-    @Select("select count(1) from cm_vote_users")
-	Long selectVoteUsersCount();
+//    @Select("select count(1) from cm_vote_users")
+	Long selectVoteUsersCount(@Param("user") UserQueryVo userQueryVo);
 
     /**
      * 分页查询用户列表
      * @param pageRequest
      * @return
      */
-	List<VoteUsers> selectVoteUserList(@Param("pageRequest")PageRequest pageRequest);
+	List<VoteUsersResp> selectVoteUserList(@Param("pageRequest")PageRequest pageRequest,
+										   @Param("user") UserQueryVo userQueryVo);
 
 	/**
 	 * 更新用户状态

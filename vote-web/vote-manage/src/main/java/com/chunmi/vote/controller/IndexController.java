@@ -12,7 +12,7 @@ public class IndexController {
 	 * @param model
 	 * @return
 	 */
-	@GetMapping(value="/")
+	@GetMapping(value = {"/",""})
 	public String index(Model model) {
 		return "redirect:admin/login";
 	}
