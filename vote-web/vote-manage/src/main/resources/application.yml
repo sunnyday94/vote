@@ -1,12 +1,8 @@
-# 配置数据源
 spring:
-  datasource:
-    url: jdbc:mysql://39.108.239.226:3306/cm_vote?useUnicode=true&characterEncoding=UTF-8
-    username: root
-    password: uAiqwVwjJ8-i
-    driver-class-name: com.mysql.jdbc.Driver    
-    
-#thymeleaf 模板设置
+  profiles:
+    active: dev
+
+  #thymeleaf 模板设置
   thymeleaf:
     cache: false
     mode: HTML5
@@ -21,6 +17,7 @@ spring:
     view:
       prefix: classpath:templates
       suffix: .html
+
 
 # 设置上下文了路径
 server:
